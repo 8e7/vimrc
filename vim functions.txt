@@ -1,0 +1,10 @@
+i - insert mode
+o - new line and insert
+a - append
+A - append at end of line
+v - select
+y - copy
+p - paste
+r - replace
+x - delete char 
+dd - delete line

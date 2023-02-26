@@ -1,0 +1,79 @@
+syntax on
+set nu rnu cin bs=2 ts=4 sw=4 hls
+set belloff=all autochdir showcmd termguicolors mouse=a
+set encoding=utf-8
+set bg=dark
+color solarized8
+
+let t:is_transparent = 0                     
+function! Toggle_transparent_background()                      
+  if t:is_transparent == 0                   
+    hi Normal guibg=#111111 ctermbg=black                    
+	se bg=dark
+    let t:is_transparent = 1
+  else
+    hi Normal guibg=NONE ctermbg=NONE                    
+    let t:is_transparent = 0                        
+  endif                    
+endfunction               
+nnoremap <C-t> :call Toggle_transparent_background()<CR>
+
+call plug#begin('~/.vim/plugged')
+
+" Plug 'jiangmiao/auto-pairs'
+Plug 'mhinz/vim-startify'
+Plug 'itchyny/lightline.vim'
+Plug 'lervag/vimtex'
+
+call plug#end()
+
+augroup rnutoggle
+    au!
+    au InsertEnter * set nornu
+    au InsertLeave * if expand('%') != '' | set rnu | endif
+augroup END
+
+if has('gui_running')
+    au GUIEnter * simalt ~x " maximize window
+    set guioptions-=m guioptions-=e guioptions-=T guioptions-=L guioptions-=R guioptions-=l guioptions-=r
+    " menu | tab page | toolbar | left scrollbar | right scrollbar | left scrollbar (split) | right scrollbar (split)
+    if has('win32')
+        set guifont=Consolas:h14 " for Windows
+    else
+        set guifont=Dejavu\ Sans\ Mono\ 14
+    endif
+    " set guifontwide=DFKai-SB
+endif
+
+function s:CppFastBuild()
+    nnoremap <F9> :w<bar>!g++ % -o %:r -std=c++17 -Dzisk -Ofast -Wfatal-errors -Wall<CR>
+    nnoremap <F12> :w<bar>!g++ % grader.cpp -o %:r -std=c++17 -Dzisk -Ofast -Wfatal-errors -Wall<CR>
+    nnoremap <F8> :!./%:r<CR>
+endfunction
+
+function s:CFastBuild()
+    nnoremap <F9> :w<bar>!gcc % -o %:r -Wfatal-errors -Wall<CR>
+    nnoremap <F8> :!./%:r<CR>
+endfunction
+
+function s:XeLatexFastBuild()
+	nnoremap <silent> <F9> :w<bar>!latexmk -pdf -pvc %<CR>
+endfunction
+
+augroup fastbuild
+    au!
+	au BufEnter *.c call <SID>CFastBuild()
+    au BufEnter *.cpp call <SID>CppFastBuild()
+	au BufEnter *.tex call <SID>XeLatexFastBuild()
+augroup END
+
+inoremap {<CR> {<CR>}<ESC>O
+vnoremap <C-c> "+y
+vnoremap <C-v> c<ESC>"+p
+inoremap <C-v> <ESC>"+pa
+map <C-a> <ESC>ggVG
+nnoremap <F3> :%d<CR>:r ~/Desktop/CPP/default_code.cpp<CR>ggdd24Gi
+cd ~/Desktop/CPP
+set smartindent
+set laststatus=2
+let g:vimtex_quickfix_open_on_warning = 0
